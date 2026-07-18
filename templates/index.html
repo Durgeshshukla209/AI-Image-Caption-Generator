@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Caption Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🤖 AI Image Caption Generator</h1>
+
+    <p class="subtitle">
+        Upload an image and let Artificial Intelligence generate a caption.
+    </p>
+
+    <form method="POST" enctype="multipart/form-data" id="uploadForm">
+
+    <label for="imageInput" class="drop-zone" id="dropZone">
+        <span id="dropText">
+            📁 Drag & Drop Image Here<br>
+            <small>or click to browse</small>
+        </span>
+
+        <input type="file" id="imageInput" name="image" hidden required>
+    </label>
+
+    <br><br>
+
+    <button type="submit">
+        Generate Caption
+    </button>
+
+</form>
+
+<div id="loading" style="display:none;">
+    <div class="loader"></div>
+    <p>Generating AI Caption...</p>
+</div>
+
+<div id="previewContainer" style="display:none; margin-top:30px;">
+
+    <h2>Image Preview</h2>
+
+    <img id="previewImage"
+     class="preview-image"
+     src=""
+     alt="Preview">
+    <br><br>
+
+    <button type="button" id="removeImage">
+        🗑 Remove Image
+    </button>
+
+</div>
+
+    {% if image %}
+
+        <div class="result">
+
+           <img src="{{ image }}"
+     class="preview-image"
+     alt="Uploaded Image">
+
+            <div class="caption-box">
+
+    <h2>Generated Caption</h2>
+
+    <p class="caption">{{ caption }}</p>
+
+    <button onclick="copyCaption()" class="copy-btn">
+        📋 Copy Caption
+    </button>
+
+</div>
+
+        </div>
+
+    {% endif %}
+
+</div>
+<script>
+
+const dropZone = document.getElementById("dropZone");
+const input = document.getElementById("imageInput");
+const text = document.getElementById("dropText");
+
+const previewContainer = document.getElementById("previewContainer");
+const previewImage = document.getElementById("previewImage");
+
+function showPreview(file){
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+
+        previewImage.src = e.target.result;
+
+        previewContainer.style.display = "block";
+    }
+
+    reader.readAsDataURL(file);
+}
+
+dropZone.addEventListener("dragover",(e)=>{
+
+    e.preventDefault();
+
+    dropZone.classList.add("dragover");
+
+});
+
+dropZone.addEventListener("dragleave",()=>{
+
+    dropZone.classList.remove("dragover");
+
+});
+
+dropZone.addEventListener("drop",(e)=>{
+
+    e.preventDefault();
+
+    dropZone.classList.remove("dragover");
+
+    input.files = e.dataTransfer.files;
+
+    text.innerHTML = "✅ " + input.files[0].name;
+
+    showPreview(input.files[0]);
+
+});
+
+input.addEventListener("change",()=>{
+
+    text.innerHTML = "✅ " + input.files[0].name;
+
+    showPreview(input.files[0]);
+
+});
+// 👇 Add this at the END of the existing script
+document.getElementById("uploadForm").addEventListener("submit", function () {
+    document.getElementById("loading").style.display = "block";
+});
+
+const removeBtn = document.getElementById("removeImage");
+
+removeBtn.addEventListener("click", function(){
+
+    // Clear the selected file
+    input.value = "";
+
+    // Hide preview
+    previewContainer.style.display = "none";
+
+    // Remove image
+    previewImage.src = "";
+
+    // Reset drag-drop text
+    text.innerHTML = `
+        📁 Drag & Drop Image Here<br>
+        <small>or click to browse</small>
+    `;
+});
+function copyCaption() {
+
+    const text = document.querySelector(".caption").innerText;
+
+    navigator.clipboard.writeText(text).then(() => {
+        alert("✅ Caption copied successfully!");
+    }).catch(() => {
+        alert("❌ Failed to copy caption.");
+    });
+
+}
+</script>
+<footer>
+    <p>🤖 AI Image Caption Generator</p>
+    <p>Powered by ❤️ Flask • Hugging Face • PyTorch</p>
+    <p>Designed & Developed by Durgesh Shukla</p>
+</footer>
+</body>
+</html>
