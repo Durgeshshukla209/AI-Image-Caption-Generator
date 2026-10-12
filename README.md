@@ -64,6 +64,3 @@ http://127.0.0.1:5000
 - Dark Mode
 - Drag and Drop Upload
 
-## Author
-
-Durgesh Shukla
